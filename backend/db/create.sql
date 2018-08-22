@@ -1,0 +1,3 @@
+CREATE DATABASE fund_prod;
+CREATE DATABASE fund_dev;
+CREATE DATABASE fund_test;

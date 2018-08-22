@@ -1,0 +1,8 @@
+flask
+requests
+bs4==0.0.1
+sqlalchemy
+Flask-Testing==0.6.2
+Flask-SQLAlchemy==2.3.2
+flask-cors
+psycopg2==2.7.3.2
