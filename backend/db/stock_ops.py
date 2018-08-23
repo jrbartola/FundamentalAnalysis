@@ -6,17 +6,57 @@ from db.models.eps import EPS
 from db.models.revenues import Revenues
 
 
-
 def get_stock(ticker=None):
     """
     Returns information about a Stock with the specified ticker. If ticker is None, then
     all stocks in the database are returned.
-    :param ticker: str
-    :return: Stock if found, or a list of all Stocks if ticker is unspecified.
+
+    Args:
+        ticker (str): The stock ticker symbol.
+    Returns:
+        Stock if found, or
+        list[Stock] of all Stocks if ticker is unspecified.
     """
     if ticker:
         return Stock.query.filter_by(ticker=ticker).first()
     return Stock.query.all()
+
+
+def add_stock(name, ticker):
+    """
+    Adds a stock to the database with a given name and ticker symbol.
+
+    Args:
+        name (str): The name of the stock.
+        ticker (str): The stock ticker symbol.
+    Returns:
+
+    """
+    try:
+        stock = Stock(name, ticker)
+        db.session.add(stock)
+        db.session.commit()
+    except Exception:
+        # If an exception occurs, rollback the session and reraise
+        db.session.rollback()
+        raise
+
+
+def update_stock(stock):
+    """
+    Updates a stock in the database.
+
+    Args:
+        stock (Stock): The stock to update in the database.
+    """
+    try:
+        db.session.add(stock)
+        db.session.commit()
+    except Exception:
+        # If an exception occurs, rollback the session and reraise
+        db.session.rollback()
+        raise
+
 
 def update_stock_data(ticker):
     """
@@ -27,8 +67,7 @@ def update_stock_data(ticker):
     stock = get_stock(ticker)
     if not stock:
         name = scraper.get_stock_name(ticker)
-        stock = Stock(name, ticker)
-        db.session.add(stock)
+        add_stock(name, ticker)
 
     # NOTE: eps_growth only ever contains four numbers, so skip the first spot
     avg_eps_growth = sum(scraper.get_eps_growth(ticker)[1:]) / 4
@@ -41,8 +80,9 @@ def update_stock_data(ticker):
     stock.qoq_eps_growth = qoq_eps_growth
     stock.avg_sales_growth = avg_sales_growth
     stock.qoq_sales_growth = qoq_sales_growth
-    db.session.commit()
+    update_stock(stock)
     update_mos(ticker)
+
 
 def update_mos(ticker):
     """Updates the sticker price and margin of safety for a stock with a given ticker."""
@@ -53,33 +93,10 @@ def update_mos(ticker):
         mos, sticker = get_margin_of_safety(ticker)
         stock.sticker = sticker
         stock.margin = mos
-        db.session.commit()
+        update_stock(stock)
     except Exception as e:
         print("Exception encountered determining Margin of Safety for {}: {}".format(ticker, e))
 
-def update_eps_data(ticker):
-    """Updates the quarterly EPS data for a stock with a given ticker."""
-    from datetime import datetime
-
-    update_stock_data(ticker)
-    stock = get_stock(ticker)
-    if not stock:
-        # TODO
-        return
-    scraper = Scraper()
-    datapoints = scraper.get_quarterly_financials(ticker, 'eps')
-    for datum in datapoints:
-        data, time = datum['data'], datetime.strptime(datum['time'], '%b %d, %Y')
-        earning = EPS(ticker, time, data)
-        try:
-            db.session.add(earning)
-        except Exception as e:
-            print("Exception encountered when adding EPS for stock with ticker {}: {}".format(ticker, e))
-    db.session.commit()
-
-def get_eps_data(ticker):
-    """Retrieves the quarterly EPS data for a stock with a given ticker."""
-    return EPS.query.filter_by(ticker=ticker).all()
 
 def update_revenue_data(ticker):
     """Updates the quarterly revenue data for a stock with a given ticker."""
@@ -101,6 +118,7 @@ def update_revenue_data(ticker):
         except Exception as e:
             print("Exception encountered when adding revenue for stock with ticker {}: {}".format(ticker, e))
     db.session.commit()
+
 
 def get_revenue_data(ticker):
     """Retrieves the quarterly revenue data for a stock with a given ticker."""

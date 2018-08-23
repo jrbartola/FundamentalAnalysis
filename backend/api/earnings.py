@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from flask_cors import CORS
 
-from db.stock_ops import get_eps_data, update_eps_data
+from db.eps_ops import get_eps_data, update_eps_data
 
 eps_blueprint = Blueprint('eps', __name__)
 CORS(eps_blueprint)

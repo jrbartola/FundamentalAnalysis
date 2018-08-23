@@ -1,3 +1,4 @@
+import traceback
 from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 from sqlalchemy import exc
@@ -63,8 +64,11 @@ def get_single_stock(ticker):
             'data': stock.to_json()
         }
         return jsonify(response_object), 200
-    except Exception as e:
-        response_object['message'] = 'Exception encountered when adding stock with ticker {}: {}'.format(ticker, str(e))
+
+    # Catch a general exception if it occurs and send it as the response message
+    except Exception:
+        response_object['message'] = 'Exception encountered when getting stock with ticker `{}`: \n{}'.format(ticker,
+                                                                                                traceback.format_exc())
         return jsonify(response_object), 500
 
 @stocks_blueprint.route('/api/stocks', methods=['GET'])

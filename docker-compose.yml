@@ -17,6 +17,7 @@ services:
       - FLASK_DEBUG=1
       - APP_SETTINGS=config.DevelopmentConfig
       - DATABASE_URL=postgres://postgres@fund-db:5432/fund_dev
+      - DATABASE_PROD_URL=postgres://postgres@fund-db:5432/fund_prod
       - DATABASE_TEST_URL=postgres://postgres@fund-db:5432/fund_test
   fund-db:
     image: postgres:latest

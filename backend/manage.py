@@ -22,19 +22,6 @@ def recreate_db():
     db.session.commit()
 
 @cli.command()
-def seed_db():
-    """Seeds the database with 500 stocks from the S&P."""
-    import json
-
-    f = open('snp.json', 'r')
-    snp_dict = json.loads(f.read())
-
-    # Add all tickers to the database
-    for company in snp_dict:
-        db.session.add(Stock(name=company['Name'], ticker=company['Symbol']))
-    db.session.commit()
-
-@cli.command()
 def get_mos():
     """Calculates the stick price and margin of safety for each stock in the database."""
     from eval import get_margin_of_safety

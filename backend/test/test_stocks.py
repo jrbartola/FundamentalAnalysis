@@ -1,17 +1,11 @@
-# test_users.py
+# test_stocks.py
 
 import json
 import unittest
 
 from test.base import BaseTestCase
-from db.models.stock import Stock
-from flaskapp import db
+from db.stock_ops import add_stock, get_stock
 
-def add_stock(name, ticker):
-    stock = Stock(name=name, ticker=ticker)
-    db.session.add(stock)
-    db.session.commit()
-    return stock
 
 class TestStockAPI(BaseTestCase):
     """Tests for the Stocks API."""
@@ -98,7 +92,8 @@ class TestStockAPI(BaseTestCase):
 
     def test_single_stock(self):
         """Ensure get single stock behaves correctly, with both upper and lowercase."""
-        stock = add_stock('Apple, Inc.', 'AAPL')
+        add_stock('Apple, Inc.', 'AAPL')
+        stock = get_stock('AAPL')
         with self.client:
             response = self.client.get(f'/api/stocks/{stock.ticker.lower()}')
             data = json.loads(response.data.decode())
@@ -113,13 +108,12 @@ class TestStockAPI(BaseTestCase):
             self.assertIn('Apple, Inc.', data['data']['name'])
             self.assertIn('success', data['status'])
 
-    def test_single_stock_no_ticker(self):
+    def test_single_stock_invalid_ticker(self):
         """Ensure error is thrown if a valid ticker is not provided."""
         with self.client:
             response = self.client.get('/api/stocks/abcdefgh')
             data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 404)
-            self.assertIn(f'Stock with ticker `ABCDEFGH` does not exist.', data['message'])
+            self.assertEqual(response.status_code, 500)
             self.assertIn('fail', data['status'])
 
     def test_all_users(self):

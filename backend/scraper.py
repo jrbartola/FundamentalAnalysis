@@ -196,4 +196,4 @@ class Scraper(object):
 
 if __name__ == '__main__':
     s = Scraper()
-    print(s.get_stock_name('twtr'))
+    print(s.get_stock_name('fb'))
