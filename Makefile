@@ -20,15 +20,6 @@ test:
 	docker-compose -f docker-compose.yml \
   run app python manage.py test
 
-# Seed the database with S&P 500 stocks
-seed:
-	docker-compose -f docker-compose.yml \
-  run app python manage.py seed_db
-
-# Calculate MOS & Sticker Price
-calc:
-	docker-compose -f docker-compose.yml \
-  run app python manage.py get_mos
 # Stop all services associated with the application
 down:
 	docker-compose down
