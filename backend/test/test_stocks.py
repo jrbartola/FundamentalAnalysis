@@ -10,7 +10,6 @@ from db.stock_ops import add_stock, get_stock
 class TestStockAPI(BaseTestCase):
     """Tests for the Stocks API."""
 
-
     def test_add_stock(self):
         """Ensure a new stock can be added to the database."""
         with self.client:
@@ -86,8 +85,7 @@ class TestStockAPI(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
-            self.assertIn(
-                'Sorry. A stock with ticker `AAPL` already exists.', data['message'])
+            self.assertIn('A stock with ticker `AAPL` already exists.', data['message'])
             self.assertIn('fail', data['status'])
 
     def test_single_stock(self):
@@ -101,6 +99,7 @@ class TestStockAPI(BaseTestCase):
             self.assertIn('AAPL', data['data']['ticker'])
             self.assertIn('Apple, Inc.', data['data']['name'])
             self.assertIn('success', data['status'])
+
             response = self.client.get(f'/api/stocks/{stock.ticker.upper()}')
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
@@ -109,9 +108,17 @@ class TestStockAPI(BaseTestCase):
             self.assertIn('success', data['status'])
 
     def test_single_stock_invalid_ticker(self):
-        """Ensure error is thrown if a valid ticker is not provided."""
+        """Ensure 404 is returned if a valid ticker is not provided."""
         with self.client:
             response = self.client.get('/api/stocks/abcdefgh')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+
+    def test_single_stock_fetch_invalid_ticker(self):
+        """Ensure error is thrown if an invalid ticker w/ update is provided."""
+        with self.client:
+            response = self.client.get('/api/stocks/abcdefgh?update=true')
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 500)
             self.assertIn('fail', data['status'])

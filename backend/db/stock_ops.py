@@ -1,9 +1,8 @@
 # Contains database methods for modifying Stock data
 from flaskapp import db
+from sqlalchemy import exc
 from scraper import Scraper
 from db.models.stock import Stock
-from db.models.eps import EPS
-from db.models.revenues import Revenues
 
 
 def get_stock(ticker=None):
@@ -36,8 +35,8 @@ def add_stock(name, ticker):
         stock = Stock(name, ticker)
         db.session.add(stock)
         db.session.commit()
-    except Exception:
-        # If an exception occurs, rollback the session and reraise
+    except exc.IntegrityError:
+        # If an integrity exception occurs, rollback the session and reraise
         db.session.rollback()
         raise
 
@@ -52,8 +51,8 @@ def update_stock(stock):
     try:
         db.session.add(stock)
         db.session.commit()
-    except Exception:
-        # If an exception occurs, rollback the session and reraise
+    except exc.IntegrityError:
+        # If an integrity exception occurs, rollback the session and reraise
         db.session.rollback()
         raise
 
@@ -96,30 +95,3 @@ def update_mos(ticker):
         update_stock(stock)
     except Exception as e:
         print("Exception encountered determining Margin of Safety for {}: {}".format(ticker, e))
-
-
-def update_revenue_data(ticker):
-    """Updates the quarterly revenue data for a stock with a given ticker."""
-    from datetime import datetime
-
-    # TODO: Figure out if this is absolutely necessary
-    update_stock_data(ticker)
-    stock = get_stock(ticker)
-    if not stock:
-        # TODO
-        return
-    scraper = Scraper()
-    datapoints = scraper.get_quarterly_financials(ticker, 'revenue')
-    for datum in datapoints:
-        data, time = datum['data'], datetime.strptime(datum['time'], '%b %d, %Y')
-        revenue = Revenues(ticker, time, data)
-        try:
-            db.session.add(revenue)
-        except Exception as e:
-            print("Exception encountered when adding revenue for stock with ticker {}: {}".format(ticker, e))
-    db.session.commit()
-
-
-def get_revenue_data(ticker):
-    """Retrieves the quarterly revenue data for a stock with a given ticker."""
-    return Revenues.query.filter_by(ticker=ticker).all()

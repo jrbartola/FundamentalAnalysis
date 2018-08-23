@@ -3,15 +3,15 @@ from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 from sqlalchemy import exc
 
-from db.models.stock import Stock
-from db.stock_ops import get_stock, update_stock_data
+from db.stock_ops import get_stock, update_stock_data, add_stock
 from flaskapp import db
 
 stocks_blueprint = Blueprint('stocks', __name__)
 CORS(stocks_blueprint)
 
+
 @stocks_blueprint.route('/api/stocks', methods=['POST'])
-def add_stock():
+def add_new_stock():
     post_data = request.get_json()
     response_object = {
         'status': 'fail',
@@ -30,17 +30,17 @@ def add_stock():
     try:
         stock = get_stock(ticker)
         if not stock:
-            db.session.add(Stock(name=name, ticker=ticker))
-            db.session.commit()
+            add_stock(name, ticker)
             response_object['status'] = 'success'
             response_object['message'] = f'Stock with ticker `{ticker}` was added!'
             return jsonify(response_object), 201
         else:
-            response_object['message'] = f'Sorry. A stock with ticker `{ticker}` already exists.'
+            response_object['message'] = f'A stock with ticker `{ticker}` already exists.'
             return jsonify(response_object), 400
     except exc.IntegrityError:
         db.session.rollback()
         return jsonify(response_object), 400
+
 
 @stocks_blueprint.route('/api/stocks/<ticker>', methods=['GET'])
 def get_single_stock(ticker):
@@ -48,17 +48,14 @@ def get_single_stock(ticker):
     ticker = ticker.upper()
     response_object = {
         'status': 'fail',
-        'message': f'Stock with ticker `{ticker}` does not exist and could not be added.'
+        'message': f'Stock with ticker `{ticker}` does not exist in the database.'
     }
     try:
-        if request.args.get('calculate'):
+        if request.args.get('update'):
             update_stock_data(ticker)
         stock = get_stock(ticker)
         if not stock:
-            update_stock_data(ticker)
-            stock = get_stock(ticker)
-            if stock is None:
-                return jsonify(response_object), 404
+            return jsonify(response_object), 404
         response_object = {
             'status': 'success',
             'data': stock.to_json()
@@ -70,6 +67,7 @@ def get_single_stock(ticker):
         response_object['message'] = 'Exception encountered when getting stock with ticker `{}`: \n{}'.format(ticker,
                                                                                                 traceback.format_exc())
         return jsonify(response_object), 500
+
 
 @stocks_blueprint.route('/api/stocks', methods=['GET'])
 def get_all_stocks():
