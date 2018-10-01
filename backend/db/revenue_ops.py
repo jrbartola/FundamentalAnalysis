@@ -3,7 +3,7 @@ from flaskapp import db
 from sqlalchemy import exc
 from scraper import Scraper
 from db.models.revenues import Revenues
-from db.stock_ops import get_stock
+# from db.stock_ops import get_stock
 
 
 def get_revenue_data(ticker):
@@ -46,9 +46,6 @@ def update_revenue_data(ticker):
     """
     from datetime import datetime
 
-    stock = get_stock(ticker)
-    if not stock:
-        raise RuntimeError(f"Attempted to update revenue data for non-existent stock: `{ticker}`")
     scraper = Scraper()
     datapoints = scraper.get_quarterly_financials(ticker, 'revenue')
     for datum in datapoints:

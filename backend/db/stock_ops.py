@@ -3,6 +3,8 @@ from flaskapp import db
 from sqlalchemy import exc
 from scraper import Scraper
 from db.models.stock import Stock
+from db.revenue_ops import update_revenue_data
+from db.eps_ops import update_eps_data
 
 
 def get_stock(ticker=None):
@@ -67,6 +69,7 @@ def update_stock_data(ticker):
     if not stock:
         name = scraper.get_stock_name(ticker)
         add_stock(name, ticker)
+        stock = get_stock(ticker)
 
     # NOTE: eps_growth only ever contains four numbers, so skip the first spot
     avg_eps_growth = sum(scraper.get_eps_growth(ticker)[1:]) / 4
@@ -81,6 +84,8 @@ def update_stock_data(ticker):
     stock.qoq_sales_growth = qoq_sales_growth
     update_stock(stock)
     update_mos(ticker)
+    update_eps_data(ticker)
+    update_revenue_data(ticker)
 
 
 def update_mos(ticker):
