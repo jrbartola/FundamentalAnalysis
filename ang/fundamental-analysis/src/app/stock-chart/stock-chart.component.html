@@ -1,0 +1,47 @@
+<div id="charts">
+  <mat-tab-group>
+    <mat-tab label="Stock">
+      <kendo-stockchart>
+        <kendo-chart-title text="{{ stock.name }}">
+        </kendo-chart-title>
+        <kendo-chart-series>
+          <kendo-chart-series-item
+              type="candlestick"
+              [data]="stockData"
+              openField="open"
+              closeField="close"
+              lowField="low"
+              highField="high"
+              categoryField="date">
+          </kendo-chart-series-item>
+        </kendo-chart-series>
+        <kendo-chart-navigator>
+         <kendo-chart-navigator-select [from]="from" [to]="to">
+         </kendo-chart-navigator-select>
+          <kendo-chart-navigator-series>
+            <kendo-chart-navigator-series-item type="area" [data]="stockData" field="close" categoryField="date">
+            </kendo-chart-navigator-series-item>
+         </kendo-chart-navigator-series>
+        </kendo-chart-navigator>
+      </kendo-stockchart>
+    </mat-tab>
+    <mat-tab label="EPS and Revenue">
+      <kendo-chart [categoryAxis]="{ categories: epsRevAxisLabels,
+                                     maxDateGroups: epsRevAxisLabels.length,
+                                     baseUnit: 'fit',
+                                     axisCrossingValues: epsRevCrossingValues}">
+        <kendo-chart-value-axis>
+          <kendo-chart-value-axis-item name="earningsAxis" [title]="{ text: 'Earnings' }"></kendo-chart-value-axis-item>
+          <kendo-chart-value-axis-item name="revenueAxis" [title]="{ text: 'Revenue' }"></kendo-chart-value-axis-item>
+          </kendo-chart-value-axis>
+        <kendo-chart-title text="EPS and Revenue"></kendo-chart-title>
+        <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
+        <kendo-chart-tooltip format="${0}"></kendo-chart-tooltip>
+        <kendo-chart-series>
+          <kendo-chart-series-item type="line" style="smooth" axis="earningsAxis" [data]="epsData" [name]="EPS"></kendo-chart-series-item>
+          <kendo-chart-series-item type="line" style="smooth" axis="revenueAxis" [data]="revenueData" [name]="Revenue"></kendo-chart-series-item>
+        </kendo-chart-series>
+      </kendo-chart>
+    </mat-tab>
+  </mat-tab-group>
+</div>

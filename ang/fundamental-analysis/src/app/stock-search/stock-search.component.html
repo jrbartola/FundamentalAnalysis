@@ -1,0 +1,14 @@
+<div id="search-component">
+  <mat-card>
+    <mat-card-content>
+      <form>
+        <div class="flex">
+          <mat-form-field>
+          <input matInput #searchBox id="stock-search-box" (keyup.enter)="search(searchBox.value)" placeholder="Search a stock...">
+          </mat-form-field>
+          <mat-spinner *ngIf="loading" [diameter]="50"></mat-spinner>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

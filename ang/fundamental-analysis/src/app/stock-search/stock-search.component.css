@@ -1,0 +1,8 @@
+#search-component {
+  width: 23vw;
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+}

@@ -1,0 +1,8 @@
+/* DashboardComponent's private CSS styles */
+mat-grid-tile {
+  background-color: lightblue;
+}
+
+#app {
+  background-color: lightblue;
+}

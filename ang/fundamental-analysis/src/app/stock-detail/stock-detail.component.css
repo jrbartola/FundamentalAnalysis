@@ -1,0 +1,15 @@
+#stock-detail-component {
+  width: 23vw;
+}
+
+mat-card {
+  padding-left: 0;
+}
+
+mat-card-header {
+  margin-bottom: 5px;
+}
+
+h3.subheader-title {
+  margin-bottom: 25px;
+}

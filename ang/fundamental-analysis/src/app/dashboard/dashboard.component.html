@@ -1,0 +1,16 @@
+<div id="app">
+  <mat-grid-list cols="4" rowHeight="75px">
+    <mat-grid-tile [colspan]="1" [rowspan]="2">
+      <app-stock-search [(stock)]="stock"></app-stock-search>
+    </mat-grid-tile>
+
+    <mat-grid-tile [colspan]="3" [rowspan]="7">
+      <app-stock-chart [stock]="stock"></app-stock-chart>
+    </mat-grid-tile>
+
+    <mat-grid-tile [colspan]="1" [rowspan]="8">
+      <app-stock-detail [(stock)]="stock"></app-stock-detail>
+    </mat-grid-tile>
+
+  </mat-grid-list>
+</div>

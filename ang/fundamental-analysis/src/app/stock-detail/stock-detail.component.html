@@ -1,0 +1,65 @@
+<div id="stock-detail-component">
+  <mat-card>
+    <mat-card-header>
+        <mat-card-header>
+          <div mat-card-avatar>
+            <button mat-icon-button *ngIf="!loading" [disabled]="!stock.name" (click)="refreshData()">
+              <mat-icon aria-label="Refresh stock data">refresh</mat-icon>
+            </button>
+            <mat-spinner *ngIf="loading" [diameter]="30"></mat-spinner>
+          </div>
+          <mat-card-title>{{ stock.name }}</mat-card-title>
+          <mat-card-subtitle>{{ stock.ticker }}</mat-card-subtitle>
+        </mat-card-header>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <mat-list>
+        <h3 mat-subheader class="subheader-title">Valuation</h3>
+        <mat-list-item>
+          <mat-icon mat-list-icon>attach_money</mat-icon>
+          <mat-form-field mat-line>
+            <input mat-line matInput disabled [value]="stock.sticker" placeholder="Sticker Price">
+          </mat-form-field>
+          <mat-form-field mat-line>
+            <input mat-line matInput disabled [value]="stock.margin" placeholder="Margin of Safety">
+          </mat-form-field>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <mat-list>
+        <h3 mat-subheader class="subheader-title">EPS Growth</h3>
+        <mat-list-item>
+          <mat-icon mat-list-icon>trending_up</mat-icon>
+          <mat-form-field mat-line>
+            <input mat-line matInput disabled [style.color]="qoqEpsLabelColor"
+                   [value]="stock.qoqEpsGrowth | percent:'1.1-2'" placeholder="Last Qtr vs. Same Qtr Prev Yr">
+          </mat-form-field>
+          <mat-form-field mat-line>
+            <input mat-line matInput disabled [style.color]="avgEpsLabelColor"
+                   [value]="stock.avgEpsGrowth | percent:'1.1-2'" placeholder="Average (5 Year)">
+          </mat-form-field>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <mat-list>
+        <h3 mat-subheader class="subheader-title">Revenue Growth</h3>
+        <mat-list-item>
+          <mat-icon mat-list-icon>style</mat-icon>
+          <mat-form-field mat-line>
+            <input mat-line matInput disabled [style.color]="qoqRevenueLabelColor"
+                   [value]="stock.qoqSalesGrowth | percent:'1.1-2'" placeholder="Last Qtr vs. Same Qtr Prev Yr">
+          </mat-form-field>
+          <mat-form-field mat-line>
+            <input mat-line matInput disabled [style.color]="avgRevenueLabelColor"
+                   [value]="stock.avgSalesGrowth | percent:'1.1-2'" placeholder="Average (5 Year)">
+          </mat-form-field>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+</div>
